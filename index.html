@@ -8,27 +8,75 @@
     <link rel="stylesheet" href="./css/bootstrap.min.css">
     <link rel="stylesheet" href="./css/bootstrap-theme.min.css">
     
+    <style type="text/css">
+        h1{
+            background:#fff;
+            padding:0.5em 0;
+            margin:0;
+            position:fixed;
+            width:100%;
+        }
+        #content{
+            padding:3em 0 0 0;
+            font-size:1.25em;
+            line-height:1.5em;
+        }
+        #content p{
+            margin:1.25em 0;
+        }
+    </style>
+    
     <script src="./js/lib/jquery.min.js"></script>
     <script src="./js/lib/bootstrap.min.js"></script>
     
     <script type="text/javascript">
         var ver = "kjv";
         var lang = "eng";
-        var book = "Gen";
-        var chap = 1;
         
         $(function(){
-            $.get("./data/bibles/"+lang+"/"+ver+".xml",function(xml){
+
+            $.get("./data/"+lang+"/books.xml",function(xml){
                 var $xml = $(xml);
-                var $v = $xml.find("chapter[osisID='"+book+"."+chap+"'] verse");
-                $('#content').append($v.append(' ').text());
+                var $books = $('<ul id="books"></ul>');
+                $xml.find('rows > row').each(function(i,r){
+                    var $r = $(r);
+                    var id = $r.find('osisID').text();
+                    var title = $r.find('title').text();
+                    $books.append('<li><a href="#'+id+'">'+title+'</a></li>');
+                });
+                $('.container').append('<hr>');
+                $('.container').append($books);
+                $books.find('a').click(function(e){
+                    e.preventDefault();
+                    var $b = $(e.target);
+                    var id = $b.attr('href').replace('#','');
+                    loadChapter(id);
+                });
             });
+          
+            function loadChapter(book,chap){
+                if(!book) book = "Gen";
+                if(!chap) chap = 1;
+                
+                $.get("./data/"+lang+"/bibles/"+ver+".xml",function(xml){
+                    var $xml = $(xml);
+                    var title = $('#books a[href="#'+book+'"]').text();
+                    $('h1').text(title);
+                    $('#content').text('');
+                    $xml.find("div[osisID='"+book+"'] chapter").each(function(i,c){
+                        var $v =  $(c).find("verse");
+                        $('#content').append("<p>"+$v.append(' ').text()+"</p>");
+                    });
+                });
+            }
+          
         });
     </script>
   </head>
   <body>
-    <div id="content" class="container">
-        <h1>Genesis 1</h1>
+    <div class="container">
+        <h1>The Bible</h1>
+        <div id="content"></div>
     </div>
   </body>
 </html>
