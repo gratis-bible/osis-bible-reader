@@ -4,17 +4,36 @@
     <meta charset="utf-8">
     <title>Bible</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css">
+    
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    
     <script type="text/javascript">
+        var ver = "kjv";
+        var lang = "eng";
+        var book = "Gen";
+        var chap = 1;
+        
         $(function(){
-            $.get("./data/bibles/eng/nsb.xml",function(xml){
+            $.get("./data/bibles/"+lang+"/"+ver+".xml",function(xml){
                 var $xml = $(xml);
-                var $c1 = $xml.find("chapter[osisID='Gen.1'] verse");
-                $('body').append($c1.text());
+                var $v = $xml.find("chapter[osisID='"+book+"."+chap+"'] verse");
+                $('#content').append($v.append(' ').text());
             });
         });
     </script>
   </head>
   <body>
+    <div id="content" class="container">
+        <h1>Genesis 1</h1>
+    </div>
   </body>
 </html>
+
+
+
+
+
