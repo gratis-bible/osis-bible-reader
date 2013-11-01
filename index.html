@@ -87,6 +87,7 @@
                     e.preventDefault();
                     var $b = $(e.target);
                     var id = $b.attr('href').replace('#','');
+                    $('h1').text($b.text());
                     loadChapter(id);
                 });
             });
@@ -108,6 +109,8 @@
                   $('.books').show();
                 },function(){
                   $('.books').hide();
+                }).click(function(){
+                  $('.books').show();
                 });
           
                 if(!book) book = "Gen";
@@ -115,8 +118,6 @@
                 $('.books').hide();
                 $.get("./data/bibles/"+lang+"/"+ver+".xml",function(xml){
                     var $xml = $(xml);
-                    var title = $('.books a[href="#'+book+'"]').text();
-                    $('h1').text(title);
                     $('#content').text('');
                     $xml.find("div[osisID='"+book+"'] chapter").each(function(i,c){
                         var $v =  $(c).find("verse");
