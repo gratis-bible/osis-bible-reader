@@ -72,7 +72,7 @@
         
         $(function(){
 
-            $.get("./data/"+lang+"/books.xml",function(xml){
+            $.get("./data/books.xml",function(xml){
                 var $xml = $(xml);
                 var $books = $('.books');
                 $xml.find('rows > row').each(function(i,r){
@@ -94,7 +94,7 @@
                 if(!book) book = "Gen";
                 if(!chap) chap = 1;
                 $('.books').removeClass('active');
-                $.get("./data/"+lang+"/bibles/"+ver+".xml",function(xml){
+                $.get("./data/bibles/"+lang+"/"+ver+".xml",function(xml){
                     var $xml = $(xml);
                     var title = $('.books a[href="#'+book+'"]').text();
                     $('h1').text(title);
