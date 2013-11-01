@@ -88,6 +88,7 @@
                     var $b = $(e.target);
                     var id = $b.attr('href').replace('#','');
                     $('h1').text($b.text());
+                    $('.books').hide();
                     loadChapter(id);
                 });
             });
@@ -115,7 +116,6 @@
           
                 if(!book) book = "Gen";
                 if(!chap) chap = 1;
-                $('.books').hide();
                 $.get("./data/bibles/"+lang+"/"+ver+".xml",function(xml){
                     var $xml = $(xml);
                     $('#content').text('');
