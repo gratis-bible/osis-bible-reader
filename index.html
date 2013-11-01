@@ -36,16 +36,11 @@
             text-decoration:none;
         }
         .books{
-            visibility:hidden;
-            display:none;
             padding:10px 0;
             width:100%;
+            height:100%;
             background:#fff;
             overflow:auto;
-        }
-        .books.active, a.title:hover .books{
-            visibility:visible;
-            display:block;
             -webkit-columns:9em;
             -moz-columns:9em;
             columns:9em;
@@ -88,7 +83,6 @@
                     var title = $r.find('title').text();
                     $books.append('<li><a href="#'+id+'">'+title+'</a></li>');
                 });
-                //$('.container').append($books);
                 $books.find('a').click(function(e){
                     e.preventDefault();
                     var $b = $(e.target);
@@ -96,11 +90,29 @@
                     loadChapter(id);
                 });
             });
-            
+          
+            $(document).resize(onResize);
+          
+            function onResize(){
+              $('.books').css({
+                'max-height':($(document).height()-$('#header').height())+'px',
+                'max-width':$(document).width()+'px'
+              });
+            }
+            onResize();
+          
+
             function loadChapter(book,chap){
+          
+                $('.title').hover(function(){
+                  $('.books').show();
+                },function(){
+                  $('.books').hide();
+                });
+          
                 if(!book) book = "Gen";
                 if(!chap) chap = 1;
-                $('.books').removeClass('active');
+                $('.books').hide();
                 $.get("./data/bibles/"+lang+"/"+ver+".xml",function(xml){
                     var $xml = $(xml);
                     var title = $('.books a[href="#'+book+'"]').text();
@@ -121,7 +133,7 @@
         <div class="container">
         <a class="title" href="#">
           <h1>The Bible</h1>
-          <ul class="books active"></ul>
+          <ul class="books"></ul>
         </a>
         </div>
     </div>
