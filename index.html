@@ -8,13 +8,52 @@
     <link rel="stylesheet" href="./css/bootstrap.min.css">
     <link rel="stylesheet" href="./css/bootstrap-theme.min.css">
     
+    <script src="./js/lib/jquery.min.js"></script>
+    <script src="./js/lib/bootstrap.min.js"></script>
+    
     <style type="text/css">
-        h1{
+        #header{
             background:#fff;
-            padding:0.5em 0;
+            height:80px;
             margin:0;
             position:fixed;
+            display:block;
             width:100%;
+            
+        }
+        h1{
+            margin:20px 0 0 0;
+            padding:0;
+            display:block;
+        }
+        a h1{
+            color:#000;
+        }
+        a.title{
+           
+        }
+        a.title:hover{
+            text-decoration:none;
+        }
+        .books{
+            visibility:hidden;
+            display:none;
+            padding:10px 0;
+            overflow:scroll;
+            width:100%;
+            background:#fff;
+            overflow:scroll;
+        }
+        .books.active, a.title:hover .books{
+            visibility:visible;
+            display:block;
+            -webkit-columns:9em;
+            -moz-columns:9em;
+            columns:9em;
+        }
+        .books li{
+            display:block;
+            padding:5px 20px 5px 0;
         }
         #content{
             padding:3em 0 0 0;
@@ -26,9 +65,7 @@
         }
     </style>
     
-    <script src="./js/lib/jquery.min.js"></script>
-    <script src="./js/lib/bootstrap.min.js"></script>
-    
+    <script type="text/javascript" src="js/lib/css3-multi-column.min.js"></script>
     <script type="text/javascript">
         var ver = "kjv";
         var lang = "eng";
@@ -37,15 +74,14 @@
 
             $.get("./data/"+lang+"/books.xml",function(xml){
                 var $xml = $(xml);
-                var $books = $('<ul id="books"></ul>');
+                var $books = $('.books');
                 $xml.find('rows > row').each(function(i,r){
                     var $r = $(r);
                     var id = $r.find('osisID').text();
                     var title = $r.find('title').text();
                     $books.append('<li><a href="#'+id+'">'+title+'</a></li>');
                 });
-                $('.container').append('<hr>');
-                $('.container').append($books);
+                //$('.container').append($books);
                 $books.find('a').click(function(e){
                     e.preventDefault();
                     var $b = $(e.target);
@@ -53,14 +89,14 @@
                     loadChapter(id);
                 });
             });
-          
+            
             function loadChapter(book,chap){
                 if(!book) book = "Gen";
                 if(!chap) chap = 1;
-                
+                $('.books').removeClass('active');
                 $.get("./data/"+lang+"/bibles/"+ver+".xml",function(xml){
                     var $xml = $(xml);
-                    var title = $('#books a[href="#'+book+'"]').text();
+                    var title = $('.books a[href="#'+book+'"]').text();
                     $('h1').text(title);
                     $('#content').text('');
                     $xml.find("div[osisID='"+book+"'] chapter").each(function(i,c){
@@ -74,8 +110,15 @@
     </script>
   </head>
   <body>
+      <div id="header">
+        <div class="container">
+        <a class="title" href="#">
+          <h1>The Bible</h1>
+          <ul class="books active"></ul>
+        </a>
+        </div>
+    </div>
     <div class="container">
-        <h1>The Bible</h1>
         <div id="content"></div>
     </div>
   </body>
