@@ -91,12 +91,12 @@
                 });
             });
           
-            $(document).resize(onResize);
+            $(window).resize(onResize);
           
             function onResize(){
               $('.books').css({
-                'max-height':($(document).height()-$('#header').height())+'px',
-                'max-width':$(document).width()+'px'
+                'max-height':($(window).height()-$('#header').height())+'px',
+                'max-width':$(window).width()+'px'
               });
             }
             onResize();
