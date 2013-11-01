@@ -1,0 +1,3 @@
+[submodule "data/bibles"]
+	path = data/bibles
+	url = https://github.com/lookitscook/osis-bibles.git
