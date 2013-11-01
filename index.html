@@ -39,7 +39,6 @@
             visibility:hidden;
             display:none;
             padding:10px 0;
-            overflow:scroll;
             width:100%;
             background:#fff;
             overflow:auto;
@@ -67,6 +66,14 @@
     
     <script type="text/javascript" src="js/lib/css3-multi-column.min.js"></script>
     <script type="text/javascript">
+    
+        //get bibles submodule info
+        //https://api.github.com/repos/lookitscook/bible/contents/data/bibles
+        
+        //get available content
+        //56b06b3f9a59b5c9307588874c2839af3b23b8c4 = sample SHA
+        //https://api.github.com/repos/lookitscook/osis-bibles/contents/?ref=56b06b3f9a59b5c9307588874c2839af3b23b8c4
+    
         var ver = "kjv";
         var lang = "en";
         
