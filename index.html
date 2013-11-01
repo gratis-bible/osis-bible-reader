@@ -74,7 +74,7 @@
         
         $(function(){
 
-            $.get("./data/books.xml",function(xml){
+            $.get("./data/bibles/books.xml",function(xml){
                 var $xml = $(xml);
                 var $books = $('.books');
                 $xml.find('rows > row').each(function(i,r){
