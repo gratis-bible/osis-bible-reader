@@ -9,45 +9,86 @@
     <link rel="stylesheet" href="./css/bootstrap-theme.min.css">
     
     <script src="./js/lib/jquery.min.js"></script>
+    <script src="./js/lib/jquery.ba-hashchange.min.js"></script>
     <script src="./js/lib/bootstrap.min.js"></script>
     
     <style type="text/css">
+        .hidden{
+            visibility:hidden;
+            display:none;
+        }
         #header{
             background:#fff;
-            height:80px;
+            color:#000;
             margin:0;
             position:fixed;
             display:block;
             width:100%;
             
         }
-        h1{
-            margin:20px 0 0 0;
-            padding:0;
-            display:block;
-        }
-        a h1{
-            color:#000;
-        }
-        a.title{
-           
-        }
-        a.title:hover{
+        #header a{
             text-decoration:none;
         }
-        .books{
+        #header h1, #header h2{
+            padding:0;
+            margin:0;
+            display:block;
+            height:80px;
+            line-height:80px;
+        }
+        #header h2{
+            font-size:1.5em;
+        }
+        #header .chapter-verse,  #header .chapter-verse h1{
+            float:left;
+        }
+        #header .chapter-verse{
+            padding-right:10px;
+        }
+        #header .chapter-verse .has-menu{
+            padding:0;
+        }
+        #header .container div{
+            display:none;
+            visibility:hidden;
+        }
+        #header:hover .container div, #header .container .primary{
+            display:inline;
+            visibility:visible;
+        }
+        #header .has-menu:hover{
+            cursor:pointer;
+            background:#fff;
+            color:#000;
+        }
+        #header .has-menu{
+            margin:0;
+            padding:0 10px;
+            float:left;
+        }
+        #header .language{
+            font-style:italic;
+        }
+        #header ul{
             padding:10px 0;
             width:100%;
             height:100%;
             background:#fff;
-            overflow:auto;
+            overflow:scroll;
             -webkit-columns:9em;
             -moz-columns:9em;
+            -o-columns:9em;
+            -ms-columns:9em;
             columns:9em;
         }
-        .books li{
+        #header ul li{
             display:block;
             padding:5px 20px 5px 0;
+            -webkit-column-break-inside:avoid;
+            -moz-column-break-inside:avoid;
+            -o-column-break-inside:avoid;
+            -ms-column-break-inside:avoid;
+            column-break-inside:avoid;
         }
         #content{
             padding:3em 0 0 0;
@@ -58,39 +99,46 @@
             margin:1.25em 0;
         }
     </style>
-    
-    <script type="text/javascript" src="js/lib/css3-multi-column.min.js"></script>
+    <!--[if IE]><script type="text/javascript" src="js/lib/css3-multi-column.min.js"></script><![endif]-->
     <script type="text/javascript">
-    
-        //get bibles submodule info
-        //https://api.github.com/repos/lookitscook/bible/contents/data/bibles
         
-        //get available content
-        //56b06b3f9a59b5c9307588874c2839af3b23b8c4 = sample SHA
-        //https://api.github.com/repos/lookitscook/osis-bibles/contents/?ref=56b06b3f9a59b5c9307588874c2839af3b23b8c4
-    
-        var ver = "kjv";
-        var lang = "en";
+        var DEFAULT_LANG = 'en';
+        
+        var ver, lang, book, chapter, verse;
         
         $(function(){
-
-            $.get("./data/bibles/books.xml",function(xml){
-                var $xml = $(xml);
-                var $books = $('.books');
-                $xml.find('rows > row').each(function(i,r){
-                    var $r = $(r);
-                    var id = $r.find('osisID').text();
-                    var title = $r.find('title').text();
-                    $books.append('<li><a href="#'+id+'">'+title+'</a></li>');
+          
+            var $lang = $("#header .lang");
+            var $versions = $("#header .versions");
+            var $books = $("#header .books");
+            var $content = $("#content");
+            var $index, $bible;
+          
+            $('.hidden').hide().removeClass('hidden');
+          
+            $(window).hashchange( function(){
+                var s = location.hash.split('#')[1].split('/');
+                if(s[0]) lang = s[0];
+                if(s[1]) ver = s[1];
+                if(s[2]) book = s[2];
+                loadLanguage();
+            });
+          
+            $('#header .has-menu').on('hover click',function(){
+                $('#menu ul').hide();
+               $('#menu ul.'+$(this).attr('data-menu')).show();
+            });
+          
+            $.get("./data/bibles/index.xml",function(xml){
+                $index = $(xml);
+                $index.find("language").each(function(i,c){
+                    var $c = $(c);
+                    var id = $c.attr('id');
+                    var title = $c.attr('title');
+                    $lang.append("<li id="+id+"><a href='#"+id+"'>"+title+"</a></li>");
                 });
-                $books.find('a').click(function(e){
-                    e.preventDefault();
-                    var $b = $(e.target);
-                    var id = $b.attr('href').replace('#','');
-                    $('h1').text($b.text());
-                    $('.books').hide();
-                    loadChapter(id);
-                });
+                if(!lang) lang = DEFAULT_LANG;
+                loadLanguage();
             });
           
             $(window).resize(onResize);
@@ -103,25 +151,45 @@
             }
             onResize();
           
-
-            function loadChapter(book,chap){
-          
-                $('.title').hover(function(){
-                  $('.books').show();
-                },function(){
-                  $('.books').hide();
-                }).click(function(){
-                  $('.books').show();
+            function loadLanguage(){
+                $versions.html('');
+                $('#header .language').text($index.find("language#"+lang).attr('title'));
+                $index.find("language#"+lang+" bible").each(function(i,c){
+                    var $c = $(c);
+                    var id = $c.attr('id');
+                    var title = $c.attr('title');
+                    $versions.append("<li id="+id+"><a href='#"+lang+"/"+id+"'>"+title+"</a></li>");
                 });
+                if(!ver || !$index.find("language#"+lang+" bible#"+ver).length)
+                    ver = $index.find("language#"+lang+" bible").first().attr('id');
+                loadBible();
+            }
           
-                if(!book) book = "Gen";
-                if(!chap) chap = 1;
-                $.get("./data/bibles/"+lang+"/"+ver+".xml",function(xml){
+            function loadBible(){
+                    $books.html('');
+                    $('#header .version').text($index.find("language#"+lang+" bible#"+ver).attr('title'));
+                    $.get("./data/bibles/"+lang+"/"+ver+".xml",function(xml){
+                        $bible = $(xml);
+                        $bible.find("div[type='book']").each(function(i,c){
+                            var $c = $(c);
+                            var id = $c.attr('id');
+                            var title = $c.attr('title');
+                            $books.append("<li id="+id+"><a href='#"+lang+"/"+ver+"/"+id+"'>"+title+"</a></li>");
+                        });
+                        if(!book || !$bible.find("div#"+book).length)
+                            book = $bible.find("div[type='book']").first().attr('id');
+                        loadBook();
+                    });
+            }
+
+            function loadBook(){
+                $('#header .book').text($bible.find("div#"+book).attr('title'));
+                $.get("./data/bibles/"+lang+"/"+ver+"/"+book+".xml",function(xml){
                     var $xml = $(xml);
-                    $('#content').text('');
-                    $xml.find("div[osisID='"+book+"'] chapter").each(function(i,c){
+                    $content.text('');
+                    $xml.find("div[osisID='"+$bible.find("div#"+book).attr('osisID')+"'] chapter").each(function(i,c){
                         var $v =  $(c).find("verse");
-                        $('#content').append("<p>"+$v.append(' ').text()+"</p>");
+                        $content.append("<p>"+$v.append(' ').text()+"</p>");
                     });
                 });
             }
@@ -132,10 +200,22 @@
   <body>
       <div id="header">
         <div class="container">
-        <a class="title" href="#">
-          <h1>The Bible</h1>
-          <ul class="books"></ul>
-        </a>
+            <div class="primary has-menu" data-osis-id="gen" data-menu="books"><h1 class="book">Genesis</h1></div>
+            <div class="chapter-verse">
+                <div class="has-menu" data-menu="chapter"><h1 class="chapter">1</h1></div>
+                <h1>:</h1>
+                <div class="has-menu" data-menu="verse"><h1 class="verse">1</h1></div>
+            </div>
+            <div class="has-menu" data-osis-id="kjv" data-menu="versions"><h2 class="version">King James Version</h2></div>
+            <div class="has-menu" data-iso-id="en" data-menu="lang"><h2 class="language">English</h2></div>
+               
+            <div id="menu">
+                <ul class="books hidden"></ul>
+                <ul class="versions hidden"></ul>
+                <ul class="lang hidden"></ul>
+                <ul class="chapter hidden"></ul>
+                <ul class="verse hidden"></ul>
+            </div>
         </div>
     </div>
     <div class="container">
