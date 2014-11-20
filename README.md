@@ -1,6 +1,6 @@
 Bible
 =====
-http://www.lookitscook/bible
+http://code.lookitscook.com/bible
 
 A very simple Bible reader.
 
